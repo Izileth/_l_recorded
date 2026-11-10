@@ -1,6 +1,15 @@
 import type { Design, TemplateId } from '../lib/types';
-import { FONTS, RATIOS, TEMPLATES, backgroundOf } from '../lib/templates';
+import {  RATIOS, TEMPLATES, backgroundOf } from '../lib/templates';
 import { ColorField, Section, Segmented, Slider, Toggle } from './ui';
+
+
+const FONTS = {
+  script: 'cursive',
+  display: 'sans-serif',
+  serif: 'Georgia, serif',
+  sans: 'sans-serif',
+};
+
 
 interface Props {
   design: Design;
@@ -14,9 +23,8 @@ function Thumb({ id, active }: { id: TemplateId; active: boolean }) {
   const isDuo = id === 'duo';
   return (
     <div
-      className={`flex h-[74px] items-center justify-center overflow-hidden rounded-lg ring-2 transition ${
-        active ? 'ring-red-500' : 'ring-transparent group-hover:ring-zinc-600'
-      }`}
+      className={`flex h-[74px] items-center justify-center overflow-hidden rounded-lg ring-2 transition ${active ? 'ring-red-500' : 'ring-transparent group-hover:ring-zinc-600'
+        }`}
       style={{ background: backgroundOf(d), color: d.fg }}
     >
       <div className="text-center leading-none" style={{ fontFamily: id === 'minimal' ? FONTS.serif : FONTS.display }}>

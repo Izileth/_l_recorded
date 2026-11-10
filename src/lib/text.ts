@@ -1,3 +1,5 @@
+import type { Slide } from './types';
+
 /** Linhas em branco separam os slides do carrossel. */
 export function splitSlides(text: string): string[] {
   return text
@@ -7,27 +9,34 @@ export function splitSlides(text: string): string[] {
     .filter(Boolean);
 }
 
-/**
- * Quebra um bloco em linhas de até `maxChars` caracteres, respeitando as
- * quebras manuais que o usuário já fez.
- */
-export function wrapBlock(block: string, maxChars: number): string[] {
+/** Quebra uma linha em partes de até `maxChars` caracteres. */
+function wrapLine(line: string, maxChars: number): string[] {
   const out: string[] = [];
+  let current = '';
+  for (const word of line.split(/\s+/)) {
+    if (!current) current = word;
+    else if (current.length + 1 + word.length <= maxChars) current += ' ' + word;
+    else {
+      out.push(current);
+      current = word;
+    }
+  }
+  if (current) out.push(current);
+  return out;
+}
+
+/**
+ * Converte um bloco em grupos: cada linha digitada vira um grupo, que pode
+ * ocupar várias linhas visuais. Os grupos são a unidade do efeito de foco.
+ */
+export function wrapGroups(block: string, maxChars: number): Slide {
+  const groups: Slide = [];
   for (const raw of block.split('\n')) {
     const line = raw.trim();
     if (!line) continue;
-    let current = '';
-    for (const word of line.split(/\s+/)) {
-      if (!current) current = word;
-      else if (current.length + 1 + word.length <= maxChars) current += ' ' + word;
-      else {
-        out.push(current);
-        current = word;
-      }
-    }
-    if (current) out.push(current);
+    groups.push(wrapLine(line, maxChars));
   }
-  return out;
+  return groups;
 }
 
 export function slugify(s: string): string {

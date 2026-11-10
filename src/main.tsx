@@ -1,12 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@fontsource/inter/400.css';
-import '@fontsource/inter/500.css';
-import '@fontsource/inter/600.css';
-import '@fontsource/anton/400.css';
-import '@fontsource/yellowtail/400.css';
-import '@fontsource/playfair-display/500.css';
-import '@fontsource/playfair-display/500-italic.css';
+import './lib/fonts'; // registra as fontes empacotadas
 import './index.css';
 import App from './App.tsx';
 

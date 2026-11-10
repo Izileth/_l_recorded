@@ -1,6 +1,13 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import type { Design } from '../lib/types';
-import { FONTS, RATIOS, backgroundOf } from '../lib/templates';
+import { RATIOS, backgroundOf } from '../lib/templates';
+
+const FONTS = {
+  script: 'cursive',
+  display: 'sans-serif',
+  serif: 'Georgia, serif',
+  sans: 'sans-serif',
+};
 
 interface CardProps {
   /** Linhas já quebradas do slide. */
@@ -20,18 +27,18 @@ function lineStyle(design: Design, emphasized: boolean): CSSProperties {
     case 'duo':
       return emphasized
         ? {
-            fontFamily: FONTS.script,
-            textTransform: 'none',
-            color: design.accent,
-            fontSize: '1.3em',
-            lineHeight: 1,
-            marginTop: '-0.32em',
-            marginLeft: design.align === 'left' ? '0.35em' : 0,
-            marginRight: design.align === 'right' ? '0.35em' : 0,
-            transform: 'rotate(-4deg)',
-            position: 'relative',
-            letterSpacing: 0,
-          }
+          fontFamily: FONTS.script,
+          textTransform: 'none',
+          color: design.accent,
+          fontSize: '1.3em',
+          lineHeight: 1,
+          marginTop: '-0.32em',
+          marginLeft: design.align === 'left' ? '0.35em' : 0,
+          marginRight: design.align === 'right' ? '0.35em' : 0,
+          transform: 'rotate(-4deg)',
+          position: 'relative',
+          letterSpacing: 0,
+        }
         : { fontFamily: FONTS.display, lineHeight: 0.98, letterSpacing: '0.005em' };
     case 'minimal':
       return {

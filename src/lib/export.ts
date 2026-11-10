@@ -1,14 +1,29 @@
-import { toPng } from 'html-to-image';
+import { toJpeg, toPng } from 'html-to-image';
 import JSZip from 'jszip';
+
+export type ExportFormat = 'png' | 'jpg';
+
+export interface ExportOptions {
+  format: ExportFormat;
+  /** Multiplicador de resolução (1 = 1080 px de largura). */
+  scale: 1 | 2;
+}
 
 export const nextFrame = () => new Promise<void>((r) => requestAnimationFrame(() => r()));
 
-export async function cardToBlob(node: HTMLElement, width: number, height: number): Promise<Blob> {
-  const options = { width, height, pixelRatio: 1, cacheBust: true } as const;
+export async function cardToBlob(
+  node: HTMLElement,
+  width: number,
+  height: number,
+  { format, scale }: ExportOptions,
+): Promise<Blob> {
+  const render = () =>
+    format === 'jpg'
+      ? toJpeg(node, { width, height, pixelRatio: scale, quality: 0.95, cacheBust: true })
+      : toPng(node, { width, height, pixelRatio: scale, cacheBust: true });
   // A primeira chamada aquece o cache de fontes/imagens (evita texto sem fonte no Safari).
-  await toPng(node, options).catch(() => undefined);
-  const dataUrl = await toPng(node, options);
-  const res = await fetch(dataUrl);
+  await render().catch(() => undefined);
+  const res = await fetch(await render());
   return res.blob();
 }
 
@@ -32,7 +47,8 @@ export async function zipBlobs(files: { name: string; blob: Blob }[]): Promise<B
 export async function copyImage(blob: Blob): Promise<boolean> {
   try {
     if (!navigator.clipboard || typeof ClipboardItem === 'undefined') return false;
-    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    // A área de transferência só aceita PNG de forma confiável.
+    await navigator.clipboard.write([new ClipboardItem({ [blob.type || 'image/png']: blob })]);
     return true;
   } catch {
     return false;

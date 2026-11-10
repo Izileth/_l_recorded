@@ -1,35 +1,47 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { Design, LyricLine, TemplateId } from './lib/types';
-import { DEFAULT_DESIGN, RATIOS, applyTemplate } from './lib/templates';
+import type { Design, LyricLine, Slide, TemplateId } from './lib/types';
+import { DEFAULT_DESIGN, RATIOS, applyTemplate, randomCombo } from './lib/templates';
 import { SAMPLE_LRC, buildSnippet, parseLyrics } from './lib/lrc';
-import { slugify, splitSlides, wrapBlock } from './lib/text';
-import { cardToBlob, copyImage, downloadBlob, nextFrame, zipBlobs } from './lib/export';
+import { slugify, splitSlides, wrapGroups } from './lib/text';
+import { cardToBlob, copyImage, downloadBlob, nextFrame, zipBlobs, type ExportOptions } from './lib/export';
+import { ensureFonts } from './lib/fonts';
+import { fileToDataUrl } from './lib/image';
 import { Card } from './components/Card';
 import { DesignPanel } from './components/DesignPanel';
 import { LyricsPanel } from './components/LyricsPanel';
 import { Preview } from './components/Preview';
 import { SnippetEditor } from './components/SnippetEditor';
 
-const STORAGE_KEY = 'lyricards:v1';
+const STORAGE_KEY = 'lyricards:v2';
 
 interface Persisted {
   text: string;
   design: Design;
   lyrics: LyricLine[];
   fileName: string;
+  exportOptions: ExportOptions;
 }
 
+const DEFAULT_EXPORT: ExportOptions = { format: 'png', scale: 1 };
+
 function load(): Persisted {
-  const fallback: Persisted = { text: 'Another\nLevel', design: DEFAULT_DESIGN, lyrics: [], fileName: '' };
+  const fallback: Persisted = {
+    text: 'Another\nLevel',
+    design: DEFAULT_DESIGN,
+    lyrics: [],
+    fileName: '',
+    exportOptions: DEFAULT_EXPORT,
+  };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return fallback;
     const data = JSON.parse(raw) as Partial<Persisted>;
     return {
       text: typeof data.text === 'string' ? data.text : fallback.text,
-      design: { ...DEFAULT_DESIGN, ...(data.design ?? {}) },
+      design: { ...DEFAULT_DESIGN, ...(data.design ?? {}), bgImage: null },
       lyrics: Array.isArray(data.lyrics) ? data.lyrics : [],
       fileName: data.fileName ?? '',
+      exportOptions: { ...DEFAULT_EXPORT, ...(data.exportOptions ?? {}) },
     };
   } catch {
     return fallback;
@@ -42,7 +54,9 @@ export default function App() {
   const [design, setDesign] = useState<Design>(initial.design);
   const [lyrics, setLyrics] = useState<LyricLine[]>(initial.lyrics);
   const [fileName, setFileName] = useState(initial.fileName);
+  const [exportOptions, setExportOptions] = useState<ExportOptions>(initial.exportOptions);
   const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [focusMap, setFocusMap] = useState<Record<number, number>>({});
   const [index, setIndex] = useState(0);
   const [fontsTick, setFontsTick] = useState(0);
   const [exporting, setExporting] = useState(false);
@@ -50,54 +64,62 @@ export default function App() {
   const stageRef = useRef<HTMLDivElement>(null);
   const toastTimer = useRef<number | undefined>(undefined);
 
-  // Fontes: força o recálculo do ajuste automático quando carregarem.
+  // Carrega as fontes escolhidas e força o recálculo do ajuste automático.
   useEffect(() => {
-    const loads = [
-      document.fonts.load("100px 'Anton'", 'Aa'),
-      document.fonts.load("100px 'Yellowtail'", 'Aa'),
-      document.fonts.load("500 100px 'Playfair Display'", 'Aa'),
-      document.fonts.load("italic 500 100px 'Playfair Display'", 'Aa'),
-      document.fonts.load("500 24px 'Inter'", 'Aa'),
-    ];
-    Promise.allSettled(loads)
-      .then(() => document.fonts.ready)
-      .then(() => setFontsTick((t) => t + 1));
-  }, []);
+    let alive = true;
+    void ensureFonts(design.fontMain, design.fontAccent).then(() => {
+      if (alive) setFontsTick((t) => t + 1);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [design.fontMain, design.fontAccent]);
 
-  // Persistência local.
+  // Persistência local (a imagem de fundo fica de fora: é pesada demais para o localStorage).
   useEffect(() => {
     const id = window.setTimeout(() => {
       try {
-        const data: Persisted = { text, design, lyrics, fileName };
+        const data: Persisted = { text, design: { ...design, bgImage: null }, lyrics, fileName, exportOptions };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       } catch {
         /* armazenamento cheio ou bloqueado: ignora */
       }
     }, 300);
     return () => window.clearTimeout(id);
-  }, [text, design, lyrics, fileName]);
+  }, [text, design, lyrics, fileName, exportOptions]);
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
     window.clearTimeout(toastTimer.current);
-    toastTimer.current = window.setTimeout(() => setToast(''), 2400);
+    toastTimer.current = window.setTimeout(() => setToast(''), 2600);
   }, []);
 
-  const slides = useMemo(
-    () => splitSlides(text).map((block) => wrapBlock(block, design.maxChars)).filter((s) => s.length),
+  const slides = useMemo<Slide[]>(
+    () => splitSlides(text).map((block) => wrapGroups(block, design.maxChars)).filter((s) => s.length),
     [text, design.maxChars],
   );
   const safeIndex = Math.min(index, Math.max(0, slides.length - 1));
 
   const patchDesign = useCallback((patch: Partial<Design>) => setDesign((d) => ({ ...d, ...patch })), []);
-  const pickTemplate = useCallback(
-    (id: TemplateId) => setDesign((d) => applyTemplate(d, id)),
-    [],
+  const pickTemplate = useCallback((id: TemplateId) => setDesign((d) => applyTemplate(d, id)), []);
+  const randomize = useCallback(() => setDesign((d) => ({ ...d, ...randomCombo() })), []);
+
+  const handleImage = useCallback(
+    async (file: File) => {
+      try {
+        const bgImage = await fileToDataUrl(file);
+        setDesign((d) => ({ ...d, bgImage, overlay: d.bgImage ? d.overlay : Math.max(d.overlay, 0.45) }));
+      } catch {
+        showToast('Não consegui abrir essa imagem.');
+      }
+    },
+    [showToast],
   );
 
   function handleSelect(next: Set<number>) {
     setSelected(next);
     setText(buildSnippet(lyrics, next));
+    setFocusMap({});
     setIndex(0);
   }
 
@@ -116,22 +138,18 @@ export default function App() {
     showToast(`${parsed.lines.filter((l) => l.text).length} linhas importadas`);
   }
 
-  function handleSample() {
-    handleImport(SAMPLE_LRC, 'exemplo.lrc');
-  }
-
   function clearLyrics() {
     setLyrics([]);
     setSelected(new Set());
     setFileName('');
   }
 
-  // Exportação: monta os cards em tamanho real fora da tela e converte em PNG.
-  async function renderBlobs(only?: number) {
+  // Exportação: monta os cards em tamanho real fora da tela e converte em imagem.
+  async function renderBlobs(options: ExportOptions, only?: number) {
     setExporting(true);
     await nextFrame();
     await nextFrame();
-    await document.fonts.ready;
+    await ensureFonts(design.fontMain, design.fontAccent);
     await nextFrame();
     try {
       const { w, h } = RATIOS[design.ratio];
@@ -141,7 +159,8 @@ export default function App() {
       const out: { name: string; blob: Blob }[] = [];
       for (const { n, i } of targets) {
         if (!n) continue;
-        out.push({ name: `${base}-${String(i + 1).padStart(2, '0')}.png`, blob: await cardToBlob(n, w, h) });
+        const name = `${base}-${String(i + 1).padStart(2, '0')}.${options.format}`;
+        out.push({ name, blob: await cardToBlob(n, w, h, options) });
       }
       return out;
     } finally {
@@ -151,10 +170,10 @@ export default function App() {
 
   async function onDownload() {
     try {
-      const [file] = await renderBlobs(safeIndex);
+      const [file] = await renderBlobs(exportOptions, safeIndex);
       if (file) {
         downloadBlob(file.blob, file.name);
-        showToast('PNG baixado');
+        showToast(`${exportOptions.format.toUpperCase()} baixado`);
       }
     } catch {
       showToast('Não foi possível gerar a imagem.');
@@ -163,7 +182,7 @@ export default function App() {
 
   async function onDownloadAll() {
     try {
-      const files = await renderBlobs();
+      const files = await renderBlobs(exportOptions);
       const zip = await zipBlobs(files);
       downloadBlob(zip, `${slugify(design.credit || 'lyric-card')}.zip`);
       showToast(`${files.length} imagens no ZIP`);
@@ -174,10 +193,9 @@ export default function App() {
 
   async function onCopy() {
     try {
-      const [file] = await renderBlobs(safeIndex);
+      const [file] = await renderBlobs({ ...exportOptions, format: 'png' }, safeIndex);
       if (!file) return;
-      const ok = await copyImage(file.blob);
-      if (ok) showToast('Imagem copiada');
+      if (await copyImage(file.blob)) showToast('Imagem copiada');
       else {
         downloadBlob(file.blob, file.name);
         showToast('Seu navegador não permite copiar — baixei o PNG');
@@ -197,15 +215,22 @@ export default function App() {
         <p className="hidden text-xs text-zinc-500 sm:block">Transforme trechos de música em posts</p>
       </header>
 
-      <main className="grid min-h-0 flex-1 gap-5 p-4 lg:grid-cols-[340px_minmax(0,1fr)_300px] lg:p-5">
+      <main className="grid min-h-0 flex-1 gap-5 p-4 lg:grid-cols-[340px_minmax(0,1fr)_320px] lg:p-5">
         <aside className="min-h-0 space-y-7 lg:overflow-y-auto lg:pr-1">
-          <SnippetEditor text={text} onChange={(v) => { setText(v); setSelected(new Set()); }} slideCount={slides.length} />
+          <SnippetEditor
+            text={text}
+            onChange={(v) => {
+              setText(v);
+              setSelected(new Set());
+            }}
+            slideCount={slides.length}
+          />
           <LyricsPanel
             lyrics={lyrics}
             selected={selected}
             onSelect={handleSelect}
             onImport={handleImport}
-            onLoadSample={handleSample}
+            onLoadSample={() => handleImport(SAMPLE_LRC, 'exemplo.lrc')}
             onClear={clearLyrics}
             fileName={fileName}
           />
@@ -218,32 +243,39 @@ export default function App() {
             onIndex={setIndex}
             design={design}
             fontsTick={fontsTick}
+            focusIndex={focusMap[safeIndex]}
+            onFocus={(g) => setFocusMap((m) => ({ ...m, [safeIndex]: g }))}
             busy={exporting}
+            exportOptions={exportOptions}
+            onExportOptions={setExportOptions}
             onDownload={onDownload}
             onDownloadAll={onDownloadAll}
             onCopy={onCopy}
+            onImage={handleImage}
           />
         </section>
 
         <aside className="min-h-0 lg:overflow-y-auto lg:pl-1">
-          <DesignPanel design={design} onChange={patchDesign} onTemplate={pickTemplate} />
+          <DesignPanel
+            design={design}
+            onChange={patchDesign}
+            onTemplate={pickTemplate}
+            onImage={handleImage}
+            onRandom={randomize}
+          />
         </aside>
       </main>
 
       {exporting && (
-        <div
-          ref={stageRef}
-          aria-hidden
-          style={{ position: 'fixed', left: -99999, top: 0, pointerEvents: 'none' }}
-        >
-          {slides.map((lines, i) => (
-            <Card key={i} lines={lines} design={design} fontsTick={fontsTick} dataCard />
+        <div ref={stageRef} aria-hidden style={{ position: 'fixed', left: -99999, top: 0, pointerEvents: 'none' }}>
+          {slides.map((slide, i) => (
+            <Card key={i} slide={slide} design={design} fontsTick={fontsTick} focusIndex={focusMap[i]} dataCard />
           ))}
         </div>
       )}
 
       {toast && (
-        <div className="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 shadow-lg">
+        <div className="fixed left-1/2 top-16 z-50 -translate-x-1/2 rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 shadow-lg">
           {toast}
         </div>
       )}

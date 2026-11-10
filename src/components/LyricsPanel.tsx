@@ -73,9 +73,8 @@ export function LyricsPanel({ lyrics, selected, onSelect, onImport, onLoadSample
         }}
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
-        className={`rounded-xl border border-dashed p-4 text-center transition ${
-          dragging ? 'border-red-500 bg-red-500/10' : 'border-zinc-800 bg-zinc-900/40'
-        }`}
+        className={`rounded-xl border border-dashed p-4 text-center transition ${dragging ? 'border-red-500 bg-red-500/10' : 'border-zinc-800 bg-zinc-900/40'
+          }`}
       >
         <input
           ref={inputRef}
@@ -123,11 +122,10 @@ export function LyricsPanel({ lyrics, selected, onSelect, onImport, onLoadSample
                 <li key={line.id}>
                   <button
                     onClick={(e) => clickLine(e, line)}
-                    className={`flex w-full items-start gap-2.5 rounded-md px-2.5 py-1.5 text-left text-sm leading-snug transition ${
-                      selected.has(line.id)
-                        ? 'bg-red-500/15 text-red-100 ring-1 ring-red-500/40'
-                        : 'text-zinc-300 hover:bg-zinc-800'
-                    }`}
+                    className={`flex w-full items-start gap-2.5 rounded-md px-2.5 py-1.5 text-left text-sm leading-snug transition ${selected.has(line.id)
+                      ? 'bg-red-500/15 text-red-100 ring-1 ring-red-500/40'
+                      : 'text-zinc-300 hover:bg-zinc-800'
+                      }`}
                   >
                     {line.time !== null && (
                       <span className="mt-0.5 w-9 shrink-0 font-mono text-[10px] tabular-nums text-zinc-500">
