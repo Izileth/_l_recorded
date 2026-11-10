@@ -1,78 +1,33 @@
-# React + TypeScript + Vite
+# Lyricards
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+MVP para transformar trechos de música em imagens para redes sociais.
+Stack: React + Vite + TypeScript + Tailwind CSS v4.
 
-Currently, two official plugins are available:
+## Rodar
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+npm run dev      # desenvolvimento
+npm run build    # type-check + build de produção
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+## Recursos
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Digite ou cole um trecho; uma **linha em branco cria um novo slide** (carrossel).
+- Importe **.lrc** ou **.txt** (arraste ou escolha o arquivo), clique nas linhas (Shift = intervalo) e o trecho é montado sozinho. Título/artista do `.lrc` viram o crédito.
+- 4 templates (Impact, Duo, Minimal, Sunset), formatos 1:1, 4:5 e 9:16.
+- Quebra automática por largura, ajuste automático de tamanho da fonte, caixa alta, destaque da última linha, alinhamento, cores e gradiente.
+- Exporta **PNG** (1080 px de largura), copia a imagem ou baixa todos os slides em **ZIP**.
+- Tudo é salvo no navegador (localStorage).
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Estrutura
 
 ```
+src/
+  App.tsx                 estado, persistência e exportação
+  components/             Card, Preview, SnippetEditor, LyricsPanel, DesignPanel, ui
+  lib/                    lrc (parser), text (quebra/slides), templates, export
+```
+
+Para criar um template novo, adicione uma entrada em `src/lib/templates.ts` e o estilo
+das linhas em `lineStyle()` no `src/components/Card.tsx`.
