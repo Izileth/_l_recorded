@@ -23,6 +23,8 @@
     "../src/App.tsx",
     "../src/vite-env.d.ts",
     "src/lib",
-    "src/components"
+    "src/components",
+    "src/vite-env.d.ts",
+    "lyric-cards/src/components"
   ]
 }
