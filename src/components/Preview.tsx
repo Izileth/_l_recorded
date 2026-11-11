@@ -20,6 +20,7 @@ interface Props {
   onDownloadAll: () => void;
   onCopy: () => void;
   onImage: (file: File) => void;
+  onDocument?: (file: File) => void;
 }
 
 const PLACEHOLDER: Slide = [['Seu'], ['trecho'], ['aqui']];
@@ -39,6 +40,7 @@ export function Preview({
   onDownloadAll,
   onCopy,
   onImage,
+  onDocument,
 }: Props) {
   const stageRef = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState({ w: 0, h: 0 });
@@ -58,7 +60,12 @@ export function Preview({
     e.preventDefault();
     setDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file?.type.startsWith('image/')) onImage(file);
+    if (!file) return;
+    if (file.type.startsWith('image/')) {
+      onImage(file);
+    } else if (onDocument) {
+      onDocument(file);
+    }
   }
 
   const scale = box.w && box.h ? Math.min((box.w - 8) / w, (box.h - 8) / h, 1) : 0.3;
@@ -76,8 +83,9 @@ export function Preview({
         }}
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
-        className={`relative flex h-[68vh] min-h-[360px] items-center justify-center overflow-hidden rounded-2xl bg-[radial-gradient(circle_at_center,#18181b,#09090b)] ring-1 transition lg:h-auto lg:flex-1 ${dragging ? 'ring-2 ring-red-500' : 'ring-zinc-800'
-          }`}
+        className={`relative flex h-[68vh] min-h-[360px] items-center justify-center overflow-hidden rounded-2xl bg-[radial-gradient(circle_at_center,#18181b,#09090b)] ring-1 transition lg:h-auto lg:flex-1 ${
+          dragging ? 'ring-2 ring-red-500' : 'ring-zinc-800'
+        }`}
       >
         <div style={{ width: w * scale, height: h * scale }} className="shrink-0 overflow-hidden rounded-[6px] shadow-2xl shadow-black/60">
           <div style={{ width: w, height: h, transform: `scale(${scale})`, transformOrigin: 'top left', opacity: hasContent ? 1 : 0.35 }}>
@@ -91,8 +99,8 @@ export function Preview({
           </div>
         </div>
         {dragging && (
-          <div className="pointer-events-none absolute inset-0 grid place-items-center bg-black/60 text-sm font-medium">
-            Solte a imagem para usar como fundo
+          <div className="pointer-events-none absolute inset-0 grid place-items-center bg-black/70 p-4 text-center text-sm font-medium text-zinc-100 backdrop-blur-xs">
+            Solte uma imagem para o fundo ou documento (.txt/.lrc) para a letra
           </div>
         )}
       </div>
