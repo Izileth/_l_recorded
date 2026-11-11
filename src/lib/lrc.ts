@@ -21,8 +21,8 @@ export function formatTime(t: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-function parseLrc(raw: string): ParsedLyrics {
-  const meta: LyricsMeta = {};
+function parseLrc(raw: string, fileName?: string): ParsedLyrics {
+  const meta: LyricsMeta = fileName ? extractMetadataFromName(fileName) : {};
   const found: { time: number; text: string }[] = [];
 
   for (const rawLine of raw.split(/\r?\n/)) {
@@ -56,12 +56,32 @@ function parseLrc(raw: string): ParsedLyrics {
   return { lines, meta, format: 'lrc' };
 }
 
-function parsePlain(raw: string): ParsedLyrics {
+const HEADER_KEY_VAL = /^(artista|artist|t[ií]tulo|title|m[uú]sica|music|song)\s*:\s*(.+)$/i;
+
+function parsePlain(raw: string, fileName?: string): ParsedLyrics {
+  const meta: LyricsMeta = fileName ? extractMetadataFromName(fileName) : {};
   const lines: LyricLine[] = [];
   let lastBlank = true; // evita linhas em branco no começo
+  let inHeader = true;
 
   for (const rawLine of raw.split(/\r?\n/)) {
     const text = rawLine.trim();
+
+    if (inHeader && text) {
+      const match = text.match(HEADER_KEY_VAL);
+      if (match) {
+        const key = match[1].toLowerCase();
+        const val = match[2].trim();
+        if (/^(artista|artist)$/.test(key)) meta.artist = val;
+        else if (/^(t[ií]tulo|title|m[uú]sica|music|song)$/.test(key)) meta.title = val;
+        continue;
+      } else {
+        inHeader = false;
+      }
+    } else if (text) {
+      inHeader = false;
+    }
+
     if (!text) {
       if (!lastBlank) lines.push({ id: lines.length, time: null, text: '' });
       lastBlank = true;
@@ -71,16 +91,45 @@ function parsePlain(raw: string): ParsedLyrics {
     lastBlank = false;
   }
   while (lines.length && !lines[lines.length - 1].text) lines.pop();
-  return { lines, meta: {}, format: 'txt' };
+  return { lines, meta, format: 'txt' };
+}
+
+/** Lê arquivo de texto usando UTF-8 com fallback seguro para Windows-1252. */
+export async function readTextFile(file: File): Promise<string> {
+  const buffer = await file.arrayBuffer();
+  const utf8Decoder = new TextDecoder('utf-8', { fatal: false });
+  const text = utf8Decoder.decode(buffer);
+  if (text.includes('\uFFFD')) {
+    try {
+      const latinDecoder = new TextDecoder('windows-1252');
+      return latinDecoder.decode(buffer);
+    } catch {
+      return text;
+    }
+  }
+  return text;
+}
+
+/** Extrai artista e título a partir do nome do arquivo (ex.: "Artista - Música.txt"). */
+export function extractMetadataFromName(fileName: string): { title?: string; artist?: string } {
+  const clean = fileName.replace(/\.[^.]+$/, '').trim();
+  const parts = clean.split(/\s*[-–—]\s*/);
+  if (parts.length >= 2) {
+    return {
+      artist: parts[0].trim(),
+      title: parts.slice(1).join(' - ').trim(),
+    };
+  }
+  return { title: clean };
 }
 
 /** Detecta .lrc pelo conteúdo (não só pela extensão) e converte em linhas. */
-export function parseLyrics(input: string): ParsedLyrics {
-  const raw = input.replace(/^﻿/, '');
+export function parseLyrics(input: string, fileName?: string): ParsedLyrics {
+  const raw = input.replace(/^\uFEFF/, '');
   const looksLikeLrc = /^\s*\[\d{1,3}:\d{1,2}(?:[.:]\d{1,3})?\]/m.test(raw);
-  const parsed = looksLikeLrc ? parseLrc(raw) : parsePlain(raw);
+  const parsed = looksLikeLrc ? parseLrc(raw, fileName) : parsePlain(raw, fileName);
   // Um .lrc sem nenhuma linha válida cai para texto simples.
-  if (looksLikeLrc && parsed.lines.length === 0) return parsePlain(raw);
+  if (looksLikeLrc && parsed.lines.length === 0) return parsePlain(raw, fileName);
   return parsed;
 }
 
