@@ -27,7 +27,7 @@ export function SnippetEditor({ text, onChange, slideCount, onUploadFile }: Prop
     <Section
       title="Seu trecho"
       aside={
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
           {onUploadFile && (
             <>
               <input
@@ -44,16 +44,20 @@ export function SnippetEditor({ text, onChange, slideCount, onUploadFile }: Prop
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-red-400 hover:text-red-300 transition"
+                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-red-400 hover:bg-red-500/10 hover:text-red-300 transition shrink-0"
                 title="Carregar arquivo .txt ou .lrc do seu dispositivo"
               >
                 <UploadIcon className="h-3.5 w-3.5" />
-                <span>Upload .txt/.lrc</span>
+                <span className="hidden sm:inline">Upload .txt/.lrc</span>
+                <span className="sm:hidden">Upload</span>
               </button>
             </>
           )}
           {text ? (
-            <button onClick={() => onChange('')} className="text-xs text-zinc-500 hover:text-zinc-200">
+            <button
+              onClick={() => onChange('')}
+              className="rounded-md px-2 py-1 text-xs text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 transition shrink-0"
+            >
               Limpar
             </button>
           ) : null}
@@ -67,7 +71,7 @@ export function SnippetEditor({ text, onChange, slideCount, onUploadFile }: Prop
         }}
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
-        className={`relative rounded-xl transition ${dragging ? 'ring-2 ring-red-500 ring-offset-2 ring-offset-zinc-950' : ''}`}
+        className={`relative min-w-0 max-w-full rounded-xl transition ${dragging ? 'ring-2 ring-red-500 ring-offset-2 ring-offset-zinc-950' : ''}`}
       >
         <textarea
           value={text}
@@ -75,7 +79,7 @@ export function SnippetEditor({ text, onChange, slideCount, onUploadFile }: Prop
           rows={5}
           spellCheck={false}
           placeholder={'Digite, cole ou arraste um arquivo .txt / .lrc aqui…\n\nDeixe uma linha em branco para criar outro slide.'}
-          className="w-full resize-y rounded-xl bg-zinc-900 px-3.5 py-3 text-[15px] leading-relaxed outline-none ring-1 ring-zinc-800 placeholder:text-zinc-600 focus:ring-zinc-600 sm:rows-6"
+          className="w-full min-w-0 max-w-full resize-y rounded-xl bg-zinc-900 px-3.5 py-3 text-[14px] sm:text-[15px] leading-relaxed outline-none ring-1 ring-zinc-800 placeholder:text-zinc-600 focus:ring-zinc-600 [overflow-wrap:anywhere]"
         />
         {dragging && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-red-950/80 text-xs font-semibold text-red-200 backdrop-blur-xs">

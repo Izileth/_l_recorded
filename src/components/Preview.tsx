@@ -69,7 +69,13 @@ export function Preview({
     }
   }
 
-  const scale = box.w && box.h ? Math.min((box.w - 8) / w, (box.h - 8) / h, 1) : 0.3;
+  const availableW = Math.max(0, box.w - 24);
+  const availableH = Math.max(0, box.h - 24);
+  const scale = box.w && box.h
+    ? Math.min(availableW / w, availableH / h, 1)
+    : typeof window !== 'undefined'
+      ? Math.min((window.innerWidth - 48) / w, 0.28)
+      : 0.25;
   const hasContent = slides.length > 0;
   const slide = hasContent ? slides[Math.min(index, slides.length - 1)] : PLACEHOLDER;
   const canFocus = design.focus && slide.length > 1;
@@ -84,11 +90,14 @@ export function Preview({
         }}
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
-        className={`relative flex h-[55vw] min-h-[280px] max-h-[70vh] items-center justify-center overflow-hidden rounded-2xl bg-[radial-gradient(circle_at_center,#18181b,#09090b)] ring-1 transition sm:h-[60vh] sm:min-h-[340px] lg:h-auto lg:max-h-none lg:flex-1 ${
+        className={`relative flex h-[55vw] min-h-[260px] max-h-[70vh] items-center justify-center overflow-hidden rounded-2xl bg-[radial-gradient(circle_at_center,#18181b,#09090b)] p-3 ring-1 transition sm:h-[60vh] sm:min-h-[320px] lg:h-auto lg:max-h-none lg:flex-1 ${
           dragging ? 'ring-2 ring-red-500' : 'ring-zinc-800'
         }`}
       >
-        <div style={{ width: w * scale, height: h * scale }} className="shrink-0 overflow-hidden rounded-[6px] shadow-2xl shadow-black/60">
+        <div
+          style={{ width: Math.round(w * scale), height: Math.round(h * scale) }}
+          className="shrink-0 overflow-hidden rounded-[6px] shadow-2xl shadow-black/60 max-w-full"
+        >
           <div style={{ width: w, height: h, transform: `scale(${scale})`, transformOrigin: 'top left', opacity: hasContent ? 1 : 0.35 }}>
             <Card
               slide={slide}
@@ -140,23 +149,23 @@ export function Preview({
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        <Button variant="primary" onClick={onDownload} disabled={!hasContent || busy}>
-          <DownloadIcon className="h-4 w-4" />
-          <span>{busy ? 'Gerando…' : `Baixar ${exportOptions.format.toUpperCase()}`}</span>
+      <div className="flex flex-wrap items-center justify-center gap-2 max-w-full">
+        <Button variant="primary" onClick={onDownload} disabled={!hasContent || busy} className="shrink-0">
+          <DownloadIcon className="h-4 w-4 shrink-0" />
+          <span className="truncate">{busy ? 'Gerando…' : `Baixar ${exportOptions.format.toUpperCase()}`}</span>
         </Button>
-        <Button onClick={onCopy} disabled={!hasContent || busy}>
-          <CopyIcon className="h-4 w-4 text-zinc-400" />
+        <Button onClick={onCopy} disabled={!hasContent || busy} className="shrink-0">
+          <CopyIcon className="h-4 w-4 text-zinc-400 shrink-0" />
           <span>Copiar</span>
         </Button>
         {slides.length > 1 && (
-          <Button onClick={onDownloadAll} disabled={busy}>
-            <DownloadIcon className="h-4 w-4 text-zinc-400" />
-            <span>Todos (ZIP)</span>
+          <Button onClick={onDownloadAll} disabled={busy} className="shrink-0">
+            <DownloadIcon className="h-4 w-4 text-zinc-400 shrink-0" />
+            <span className="truncate">Todos (ZIP)</span>
           </Button>
         )}
       </div>
-      <div className="flex justify-center gap-2 w-full">
+      <div className="flex justify-center gap-2 w-full max-w-full overflow-hidden">
         <Segmented
           value={exportOptions.format}
           onChange={(format) => onExportOptions({ ...exportOptions, format })}
@@ -164,7 +173,7 @@ export function Preview({
             { value: 'png', label: 'PNG' },
             { value: 'jpg', label: 'JPG' },
           ]}
-          className="w-24"
+          className="w-24 shrink-0"
         />
         <Segmented
           value={String(exportOptions.scale) as '1' | '2'}
@@ -173,7 +182,7 @@ export function Preview({
             { value: '1', label: '1×', title: '1080 px de largura' },
             { value: '2', label: '2×', title: '2160 px de largura' },
           ]}
-          className="w-20"
+          className="w-20 shrink-0"
         />
       </div>
     </div>

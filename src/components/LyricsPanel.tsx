@@ -84,12 +84,12 @@ export function LyricsPanel({ lyrics, selected, onSelect, onImport, onLoadSample
       />
 
       {hasLyrics ? (
-        <div className="flex items-center justify-between gap-2 rounded-xl bg-zinc-900/80 px-3 py-2 text-xs ring-1 ring-zinc-800">
-          <div className="flex items-center gap-2 min-w-0">
+        <div className="flex items-center justify-between gap-2 rounded-xl bg-zinc-900/80 px-3 py-2 text-xs ring-1 ring-zinc-800 min-w-0 max-w-full">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
             <span className="grid h-6 w-6 shrink-0 place-items-center rounded bg-red-500/15 text-red-400">
               📄
             </span>
-            <span className="truncate font-medium text-zinc-200">{fileName || 'Arquivo de letra'}</span>
+            <span className="truncate font-medium text-zinc-200 min-w-0">{fileName || 'Arquivo de letra'}</span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button
@@ -154,27 +154,27 @@ export function LyricsPanel({ lyrics, selected, onSelect, onImport, onLoadSample
               </button>
             )}
           </div>
-          <p className="truncate text-xs text-zinc-500">
+          <p className="truncate text-xs text-zinc-500 max-w-full">
             {fileName ? `${fileName} · ` : ''}Clique nas linhas para montar o card · Shift para intervalo
           </p>
-          <ul className="max-h-[240px] overflow-y-auto rounded-xl bg-zinc-900/60 p-1.5 ring-1 ring-zinc-800 sm:max-h-[300px]">
+          <ul className="max-h-[240px] overflow-y-auto overflow-x-hidden rounded-xl bg-zinc-900/60 p-1.5 ring-1 ring-zinc-800 sm:max-h-[300px]">
             {visible.map((line) =>
               line.text ? (
-                <li key={line.id}>
+                <li key={line.id} className="min-w-0">
                   <button
                     onClick={(e) => clickLine(e, line)}
-                    className={`flex w-full items-start gap-2.5 rounded-md px-2.5 py-1.5 text-left text-sm leading-snug transition ${
+                    className={`flex w-full min-w-0 max-w-full items-start gap-2 rounded-md px-2.5 py-1.5 text-left text-sm leading-snug transition ${
                       selected.has(line.id)
                         ? 'bg-red-500/15 text-red-100 ring-1 ring-red-500/40'
                         : 'text-zinc-300 hover:bg-zinc-800'
                     }`}
                   >
                     {line.time !== null && (
-                      <span className="mt-0.5 w-9 shrink-0 font-mono text-[10px] tabular-nums text-zinc-500">
+                      <span className="mt-0.5 w-8 shrink-0 font-mono text-[10px] tabular-nums text-zinc-500">
                         {formatTime(line.time)}
                       </span>
                     )}
-                    <span>{line.text}</span>
+                    <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{line.text}</span>
                   </button>
                 </li>
               ) : q ? null : (

@@ -2,10 +2,10 @@ import type { ReactNode } from 'react';
 
 export function Section({ title, children, aside }: { title: string; children: ReactNode; aside?: ReactNode }) {
   return (
-    <section className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">{title}</h3>
-        {aside}
+    <section className="space-y-3 min-w-0 max-w-full">
+      <div className="flex flex-wrap items-center justify-between gap-2 min-w-0">
+        <h3 className="truncate text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">{title}</h3>
+        {aside && <div className="flex items-center gap-1.5 min-w-0 max-w-full">{aside}</div>}
       </div>
       {children}
     </section>
@@ -24,14 +24,17 @@ export function Segmented<T extends string>({
   className?: string;
 }) {
   return (
-    <div className={`grid gap-1 rounded-lg bg-zinc-900 p-1 ${className}`} style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}>
+    <div
+      className={`grid gap-1 rounded-lg bg-zinc-900 p-1 min-w-0 max-w-full ${className}`}
+      style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}
+    >
       {options.map((o) => (
         <button
           key={o.value}
           type="button"
           title={o.title}
           onClick={() => onChange(o.value)}
-          className={`rounded-md px-2 py-1.5 text-xs font-medium transition ${
+          className={`truncate rounded-md px-1.5 py-1.5 text-xs font-medium transition min-w-0 ${
             value === o.value ? 'bg-zinc-100 text-zinc-900 shadow-sm' : 'text-zinc-400 hover:text-zinc-100'
           }`}
         >
