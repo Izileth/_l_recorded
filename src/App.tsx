@@ -11,7 +11,7 @@ import { DesignPanel } from './components/DesignPanel';
 import { LyricsPanel } from './components/LyricsPanel';
 import { Preview } from './components/Preview';
 import { SnippetEditor } from './components/SnippetEditor';
-import { LogoBadge } from './components/Logo';
+import { Logo } from './components/Logo';
 
 const STORAGE_KEY = 'lyricards:v2';
 
@@ -316,10 +316,10 @@ export default function App() {
   return (
     <div className="flex min-h-screen flex-col lg:h-screen">
       <header className="flex shrink-0 items-center justify-between border-b border-zinc-900 px-5 py-3.5">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2.5">
-            <LogoBadge size="sm" />
-            <span className="text-[15px] font-semibold tracking-tight">Lyricards</span>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center">
+            <Logo size="md" showLabel={false} />
+            <span className="text-[15px] font-semibold tracking-tight">ON | Player</span>
           </div>
           <span className="hidden text-xs text-zinc-600 sm:inline">|</span>
           <p className="hidden text-xs text-zinc-500 sm:block">Transforme trechos de música em posts</p>
@@ -465,9 +465,11 @@ export default function App() {
       </main>
 
       <footer className="flex shrink-0 items-center justify-between border-t border-zinc-900 bg-zinc-950/60 px-5 py-2.5 text-xs text-zinc-500">
-        <div className="flex items-center gap-2.5">
-          <LogoBadge size="xs" variant="subtle" />
-          <span className="font-medium text-zinc-300">Lyricards</span>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center">
+            <Logo size="md" showLabel={false} />
+            <span className="text-[15px] font-semibold tracking-tight">ON | Player</span>
+          </div>
           <span className="hidden text-zinc-600 sm:inline">|</span>
           <span className="hidden text-zinc-500 sm:inline">Transforme trechos de música em posts</span>
         </div>
