@@ -2,6 +2,7 @@ import { useMemo, useRef, useState, type DragEvent, type MouseEvent } from 'reac
 import type { LyricLine } from '../lib/types';
 import { formatTime, readTextFile } from '../lib/lrc';
 import { Button, Section } from './ui';
+import { UploadCloudIcon } from './Icons';
 
 interface Props {
   lyrics: LyricLine[];
@@ -114,9 +115,7 @@ export function LyricsPanel({ lyrics, selected, onSelect, onImport, onLoadSample
           }`}
         >
           <div className="mx-auto mb-2 grid h-8 w-8 place-items-center rounded-lg bg-zinc-800/80 text-zinc-400">
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
+            <UploadCloudIcon className="h-4 w-4 text-red-500" />
           </div>
           <p className="text-sm font-medium text-zinc-300">Upload de arquivo do seu dispositivo</p>
           <p className="text-xs text-zinc-500 mt-0.5">Arraste um documento <b>.lrc</b> ou <b>.txt</b></p>

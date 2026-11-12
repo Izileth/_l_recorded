@@ -1,5 +1,6 @@
 import { useRef, useState, type DragEvent } from 'react';
 import { Section } from './ui';
+import { UploadIcon } from './Icons';
 
 interface Props {
   text: string;
@@ -43,12 +44,10 @@ export function SnippetEditor({ text, onChange, slideCount, onUploadFile }: Prop
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="inline-flex items-center gap-1 text-xs font-medium text-red-400 hover:text-red-300 transition"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-red-400 hover:text-red-300 transition"
                 title="Carregar arquivo .txt ou .lrc do seu dispositivo"
               >
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                </svg>
+                <UploadIcon className="h-3.5 w-3.5" />
                 <span>Upload .txt/.lrc</span>
               </button>
             </>

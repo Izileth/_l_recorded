@@ -4,6 +4,7 @@ import type { ExportOptions } from '../lib/export';
 import { RATIOS } from '../lib/templates';
 import { Card } from './Card';
 import { Button, Segmented } from './ui';
+import { CopyIcon, DownloadIcon } from './Icons';
 
 interface Props {
   slides: Slide[];
@@ -141,14 +142,17 @@ export function Preview({
 
       <div className="flex flex-wrap items-center justify-center gap-2">
         <Button variant="primary" onClick={onDownload} disabled={!hasContent || busy}>
-          {busy ? 'Gerando…' : `Baixar ${exportOptions.format.toUpperCase()}`}
+          <DownloadIcon className="h-4 w-4" />
+          <span>{busy ? 'Gerando…' : `Baixar ${exportOptions.format.toUpperCase()}`}</span>
         </Button>
         <Button onClick={onCopy} disabled={!hasContent || busy}>
-          Copiar imagem
+          <CopyIcon className="h-4 w-4 text-zinc-400" />
+          <span>Copiar imagem</span>
         </Button>
         {slides.length > 1 && (
           <Button onClick={onDownloadAll} disabled={busy}>
-            Baixar todos (ZIP)
+            <DownloadIcon className="h-4 w-4 text-zinc-400" />
+            <span>Baixar todos (ZIP)</span>
           </Button>
         )}
         <div className="flex gap-2">

@@ -358,13 +358,9 @@ export default function App() {
               className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-200 ring-1 ring-zinc-800 hover:bg-zinc-800 hover:text-white transition"
               title="Fazer upload de itens do seu dispositivo"
             >
-              <svg className="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-              </svg>
+              <UploadIcon className="h-4 w-4 text-red-500" />
               <span>Upload do dispositivo</span>
-              <svg className={`h-3 w-3 text-zinc-400 transition-transform ${uploadMenuOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+              <ChevronDownIcon className={`h-3 w-3 text-zinc-400 transition-transform ${uploadMenuOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {uploadMenuOpen && (
@@ -378,9 +374,7 @@ export default function App() {
                   className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-xs text-zinc-200 hover:bg-zinc-800 transition"
                 >
                   <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-red-500/15 text-red-400">
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                    <FileTextIcon className="h-4 w-4" />
                   </span>
                   <div>
                     <div className="font-medium text-zinc-100">Documento de letra (.txt / .lrc)</div>
@@ -397,9 +391,7 @@ export default function App() {
                   className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-xs text-zinc-200 hover:bg-zinc-800 transition"
                 >
                   <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-blue-500/15 text-blue-400">
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+                    <ImageIcon className="h-4 w-4" />
                   </span>
                   <div>
                     <div className="font-medium text-zinc-100">Imagem de fundo</div>
@@ -490,9 +482,7 @@ export default function App() {
       {globalDragging && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/85 backdrop-blur-sm border-2 border-dashed border-red-500 p-6 text-center pointer-events-none">
           <div className="grid h-16 w-16 place-items-center rounded-2xl bg-red-500/20 text-red-400 mb-4 animate-bounce">
-            <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
+            <UploadCloudIcon className="h-8 w-8" />
           </div>
           <h3 className="text-xl font-bold text-white mb-2">Solte seus arquivos aqui</h3>
           <p className="max-w-md text-sm text-zinc-300">
