@@ -72,10 +72,10 @@ export function SnippetEditor({ text, onChange, slideCount, onUploadFile }: Prop
         <textarea
           value={text}
           onChange={(e) => onChange(e.target.value)}
-          rows={6}
+          rows={5}
           spellCheck={false}
           placeholder={'Digite, cole ou arraste um arquivo .txt / .lrc aqui…\n\nDeixe uma linha em branco para criar outro slide.'}
-          className="w-full resize-y rounded-xl bg-zinc-900 px-3.5 py-3 text-[15px] leading-relaxed outline-none ring-1 ring-zinc-800 placeholder:text-zinc-600 focus:ring-zinc-600"
+          className="w-full resize-y rounded-xl bg-zinc-900 px-3.5 py-3 text-[15px] leading-relaxed outline-none ring-1 ring-zinc-800 placeholder:text-zinc-600 focus:ring-zinc-600 sm:rows-6"
         />
         {dragging && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-red-950/80 text-xs font-semibold text-red-200 backdrop-blur-xs">

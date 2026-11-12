@@ -1,7 +1,12 @@
-// Fontes empacotadas (somente o subconjunto latino) — funcionam offline e entram na exportação.
+// ── Fontes de UI ─────────────────────────────────────────────────────────────
+// Inter é usada na própria interface do app — importada diretamente no bundle.
 import '@fontsource/inter/latin-400.css';
 import '@fontsource/inter/latin-500.css';
 import '@fontsource/inter/latin-800.css';
+
+// ── Fontes de card ────────────────────────────────────────────────────────────
+// Importadas também em bundle pois @fontsource usa font-display:swap — o
+// browser as carrega sem bloquear a renderização inicial.
 import '@fontsource/anton/latin-400.css';
 import '@fontsource/bebas-neue/latin-400.css';
 import '@fontsource/oswald/latin-700.css';

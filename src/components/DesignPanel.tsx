@@ -132,7 +132,7 @@ export function DesignPanel({ design, onChange, onTemplate, onImage, onRandom }:
               </button>
             }
           >
-            <div className="grid grid-cols-4 gap-1.5">
+            <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-4">
               {COMBOS.map((c) => (
                 <button
                   key={c.name}
