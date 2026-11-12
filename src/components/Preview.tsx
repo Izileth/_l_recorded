@@ -84,7 +84,7 @@ export function Preview({
         }}
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
-        className={`relative flex h-[68vh] min-h-[360px] items-center justify-center overflow-hidden rounded-2xl bg-[radial-gradient(circle_at_center,#18181b,#09090b)] ring-1 transition lg:h-auto lg:flex-1 ${
+        className={`relative flex h-[55vw] min-h-[280px] max-h-[70vh] items-center justify-center overflow-hidden rounded-2xl bg-[radial-gradient(circle_at_center,#18181b,#09090b)] ring-1 transition sm:h-[60vh] sm:min-h-[340px] lg:h-auto lg:max-h-none lg:flex-1 ${
           dragging ? 'ring-2 ring-red-500' : 'ring-zinc-800'
         }`}
       >
@@ -147,12 +147,12 @@ export function Preview({
         </Button>
         <Button onClick={onCopy} disabled={!hasContent || busy}>
           <CopyIcon className="h-4 w-4 text-zinc-400" />
-          <span>Copiar imagem</span>
+          <span>Copiar</span>
         </Button>
         {slides.length > 1 && (
           <Button onClick={onDownloadAll} disabled={busy}>
             <DownloadIcon className="h-4 w-4 text-zinc-400" />
-            <span>Baixar todos (ZIP)</span>
+            <span>Todos (ZIP)</span>
           </Button>
         )}
         <div className="flex gap-2">

@@ -157,7 +157,7 @@ export function LyricsPanel({ lyrics, selected, onSelect, onImport, onLoadSample
           <p className="truncate text-xs text-zinc-500">
             {fileName ? `${fileName} · ` : ''}Clique nas linhas para montar o card · Shift para intervalo
           </p>
-          <ul className="max-h-[300px] overflow-y-auto rounded-xl bg-zinc-900/60 p-1.5 ring-1 ring-zinc-800">
+          <ul className="max-h-[240px] overflow-y-auto rounded-xl bg-zinc-900/60 p-1.5 ring-1 ring-zinc-800 sm:max-h-[300px]">
             {visible.map((line) =>
               line.text ? (
                 <li key={line.id}>

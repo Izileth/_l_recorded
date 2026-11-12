@@ -316,17 +316,18 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen flex-col lg:h-screen">
-      <header className="flex shrink-0 items-center justify-between border-b border-zinc-900 px-5 py-3.5">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center">
+      {/* ── Header ── */}
+      <header className="flex shrink-0 items-center justify-between border-b border-zinc-900 px-3 py-2.5 sm:px-5 sm:py-3.5">
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="flex shrink-0 items-center">
             <Logo size="md" showLabel={false} />
-            <span className="text-[15px] font-semibold tracking-tight">ON | Player</span>
+            <span className="text-[14px] font-semibold tracking-tight sm:text-[15px]">ON | Player</span>
           </div>
           <span className="hidden text-xs text-zinc-600 sm:inline">|</span>
           <p className="hidden text-xs text-zinc-500 sm:block">Transforme trechos de música em posts</p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           {/* Inputs invisíveis para o upload via header */}
           <input
             ref={headerLyricsInputRef}
@@ -355,23 +356,26 @@ export default function App() {
             <button
               type="button"
               onClick={() => setUploadMenuOpen((v) => !v)}
-              className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-200 ring-1 ring-zinc-800 hover:bg-zinc-800 hover:text-white transition"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-2.5 py-1.5 text-xs font-medium text-zinc-200 ring-1 ring-zinc-800 hover:bg-zinc-800 hover:text-white transition sm:gap-2 sm:px-3"
               title="Fazer upload de itens do seu dispositivo"
             >
-              <UploadIcon className="h-4 w-4 text-red-500" />
-              <span>Upload do dispositivo</span>
-              <ChevronDownIcon className={`h-3 w-3 text-zinc-400 transition-transform ${uploadMenuOpen ? 'rotate-180' : ''}`} />
+              <UploadIcon className="h-4 w-4 shrink-0 text-red-500" />
+              {/* Texto completo em sm+, apenas ícone em xs */}
+              <span className="hidden sm:inline">Upload do dispositivo</span>
+              <span className="sm:hidden">Upload</span>
+              <ChevronDownIcon className={`h-3 w-3 shrink-0 text-zinc-400 transition-transform ${uploadMenuOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {uploadMenuOpen && (
-              <div className="absolute right-0 top-full mt-2 z-50 w-64 rounded-xl bg-zinc-900 p-1.5 shadow-2xl ring-1 ring-zinc-800 backdrop-blur">
+              /* max-w + left-auto garante que não saia da viewport em mobile */
+              <div className="absolute right-0 top-full mt-2 z-50 w-[min(256px,calc(100vw-24px))] rounded-xl bg-zinc-900 p-1.5 shadow-2xl ring-1 ring-zinc-800 backdrop-blur">
                 <button
                   type="button"
                   onClick={() => {
                     setUploadMenuOpen(false);
                     headerLyricsInputRef.current?.click();
                   }}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-xs text-zinc-200 hover:bg-zinc-800 transition"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs text-zinc-200 hover:bg-zinc-800 transition"
                 >
                   <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-red-500/15 text-red-400">
                     <FileTextIcon className="h-4 w-4" />
@@ -388,7 +392,7 @@ export default function App() {
                     setUploadMenuOpen(false);
                     headerImageInputRef.current?.click();
                   }}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-xs text-zinc-200 hover:bg-zinc-800 transition"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs text-zinc-200 hover:bg-zinc-800 transition"
                 >
                   <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-blue-500/15 text-blue-400">
                     <ImageIcon className="h-4 w-4" />
@@ -404,28 +408,9 @@ export default function App() {
         </div>
       </header>
 
-      <main className="grid min-h-0 flex-1 gap-5 p-4 lg:grid-cols-[340px_minmax(0,1fr)_320px] lg:p-5">
-        <aside className="min-h-0 space-y-7 lg:overflow-y-auto lg:pr-1">
-          <SnippetEditor
-            text={text}
-            onChange={(v) => {
-              setText(v);
-              setSelected(new Set());
-            }}
-            slideCount={slides.length}
-            onUploadFile={(file) => void handleFile(file, { loadIntoSnippet: true })}
-          />
-          <LyricsPanel
-            lyrics={lyrics}
-            selected={selected}
-            onSelect={handleSelect}
-            onImport={(raw, name) => handleImport(raw, name)}
-            onLoadSample={() => handleImport(SAMPLE_LRC, 'exemplo.lrc', { loadIntoSnippet: true })}
-            onClear={clearLyrics}
-            fileName={fileName}
-          />
-        </aside>
-
+      {/* ── Main ── */}
+      <main className="grid min-h-0 flex-1 gap-4 p-3 sm:gap-5 sm:p-4 lg:grid-cols-[340px_minmax(0,1fr)_320px] lg:p-5">
+        {/* Preview primeiro em mobile (order-first), último no layout lg */}
         <section className="order-first min-h-0 lg:order-none">
           <Preview
             slides={slides}
@@ -446,6 +431,27 @@ export default function App() {
           />
         </section>
 
+        <aside className="min-h-0 space-y-6 lg:space-y-7 lg:overflow-y-auto lg:pr-1">
+          <SnippetEditor
+            text={text}
+            onChange={(v) => {
+              setText(v);
+              setSelected(new Set());
+            }}
+            slideCount={slides.length}
+            onUploadFile={(file) => void handleFile(file, { loadIntoSnippet: true })}
+          />
+          <LyricsPanel
+            lyrics={lyrics}
+            selected={selected}
+            onSelect={handleSelect}
+            onImport={(raw, name) => handleImport(raw, name)}
+            onLoadSample={() => handleImport(SAMPLE_LRC, 'exemplo.lrc', { loadIntoSnippet: true })}
+            onClear={clearLyrics}
+            fileName={fileName}
+          />
+        </aside>
+
         <aside className="min-h-0 lg:overflow-y-auto lg:pl-1">
           <DesignPanel
             design={design}
@@ -457,7 +463,8 @@ export default function App() {
         </aside>
       </main>
 
-      <footer className="flex shrink-0 items-center justify-between border-t border-zinc-900 bg-zinc-950/60 px-5 py-2.5 text-xs text-zinc-500">
+      {/* ── Footer — oculto em mobile para economizar espaço ── */}
+      <footer className="hidden shrink-0 items-center justify-between border-t border-zinc-900 bg-zinc-950/60 px-5 py-2.5 text-xs text-zinc-500 sm:flex">
         <div className="flex items-center gap-2">
           <div className="flex items-center">
             <Logo size="md" showLabel={false} />
