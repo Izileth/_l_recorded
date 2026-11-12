@@ -4,6 +4,7 @@ import { ACCENT_FONTS, MAIN_FONTS, mainFont } from '../lib/fonts';
 import { COMBOS, RATIOS, TEMPLATES, backgroundOf } from '../lib/templates';
 import { Button, ColorField, Section, Segmented, Slider, Toggle } from './ui';
 import { SurpriseIcon } from './Icons';
+import { PresetPanel } from './PresetPanel';
 
 interface Props {
   design: Design;
@@ -11,9 +12,11 @@ interface Props {
   onTemplate: (id: TemplateId) => void;
   onImage: (file: File) => void;
   onRandom: () => void;
+  onApplyPreset?: (savedDesign: Omit<Design, 'bgImage'>) => void;
+  onNotify?: (msg: string) => void;
 }
 
-type Tab = 'style' | 'text' | 'background';
+type Tab = 'style' | 'text' | 'background' | 'presets';
 
 function Thumb({ id, active }: { id: TemplateId; active: boolean }) {
   const t = TEMPLATES.find((x) => x.id === id)!;
@@ -80,7 +83,15 @@ const EMPHASIS_OPTIONS: { value: EmphasisStyle; label: string }[] = [
   { value: 'italic', label: 'Itálico' },
 ];
 
-export function DesignPanel({ design, onChange, onTemplate, onImage, onRandom }: Props) {
+export function DesignPanel({
+  design,
+  onChange,
+  onTemplate,
+  onImage,
+  onRandom,
+  onApplyPreset,
+  onNotify,
+}: Props) {
   const [tab, setTab] = useState<Tab>('style');
   const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -94,7 +105,7 @@ export function DesignPanel({ design, onChange, onTemplate, onImage, onRandom }:
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-w-0 max-w-full">
       <Segmented
         value={tab}
         onChange={setTab}
@@ -102,8 +113,23 @@ export function DesignPanel({ design, onChange, onTemplate, onImage, onRandom }:
           { value: 'style', label: 'Estilo' },
           { value: 'text', label: 'Texto' },
           { value: 'background', label: 'Fundo' },
+          { value: 'presets', label: 'Salvos' },
         ]}
       />
+
+      {tab === 'presets' && (
+        <PresetPanel
+          design={design}
+          onApplyPreset={(saved) => {
+            if (onApplyPreset) {
+              onApplyPreset(saved);
+            } else {
+              onChange(saved);
+            }
+          }}
+          onNotify={onNotify}
+        />
+      )}
 
       {tab === 'style' && (
         <>

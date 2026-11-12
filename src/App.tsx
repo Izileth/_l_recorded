@@ -315,7 +315,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col lg:h-screen">
+    <div className="flex min-h-screen flex-col lg:h-screen w-full max-w-full overflow-x-hidden">
       {/* ── Header ── */}
       <header className="flex shrink-0 items-center justify-between border-b border-zinc-900 px-3 py-2.5 sm:px-5 sm:py-3.5">
         <div className="flex min-w-0 overflow-hidden items-center gap-2">
@@ -409,9 +409,9 @@ export default function App() {
       </header>
 
       {/* ── Main ── */}
-      <main className="grid min-h-0 flex-1 gap-4 p-3 sm:gap-5 sm:p-4 lg:grid-cols-[340px_minmax(0,1fr)_320px] lg:p-5">
+      <main className="grid min-h-0 w-full max-w-full flex-1 gap-4 p-3 sm:gap-5 sm:p-4 lg:grid-cols-[340px_minmax(0,1fr)_320px] lg:p-5 overflow-x-hidden">
         {/* Preview primeiro em mobile (order-first), último no layout lg */}
-        <section className="order-first min-h-0 min-w-0 lg:order-none">
+        <section className="order-first min-h-0 min-w-0 max-w-full lg:order-none">
           <Preview
             slides={slides}
             index={safeIndex}
@@ -431,7 +431,7 @@ export default function App() {
           />
         </section>
 
-        <aside className="min-h-0 min-w-0 space-y-6 lg:space-y-7 lg:overflow-y-auto lg:pr-1">
+        <aside className="min-h-0 min-w-0 max-w-full space-y-6 lg:space-y-7 lg:overflow-y-auto lg:pr-1">
           <SnippetEditor
             text={text}
             onChange={(v) => {
@@ -452,13 +452,21 @@ export default function App() {
           />
         </aside>
 
-        <aside className="min-h-0 min-w-0 lg:overflow-y-auto lg:pl-1">
+        <aside className="min-h-0 min-w-0 max-w-full lg:overflow-y-auto lg:pl-1">
           <DesignPanel
             design={design}
             onChange={patchDesign}
             onTemplate={pickTemplate}
             onImage={handleImage}
             onRandom={randomize}
+            onApplyPreset={(saved) => {
+              setDesign((curr) => ({
+                ...curr,
+                ...saved,
+                bgImage: curr.bgImage,
+              }));
+            }}
+            onNotify={showToast}
           />
         </aside>
       </main>
@@ -499,7 +507,7 @@ export default function App() {
       )}
 
       {toast && (
-        <div className="fixed left-1/2 top-16 z-50 -translate-x-1/2 rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 shadow-lg">
+        <div className="fixed left-1/2 top-16 z-50 -translate-x-1/2 max-w-[calc(100vw-32px)] rounded-2xl bg-zinc-100 px-4 py-2 text-center text-xs sm:text-sm font-medium text-zinc-900 shadow-xl transition-all break-words [overflow-wrap:anywhere]">
           {toast}
         </div>
       )}
