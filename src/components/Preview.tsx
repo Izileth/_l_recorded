@@ -75,7 +75,7 @@ export function Preview({
   const canFocus = design.focus && slide.length > 1;
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-3">
+    <div className="flex h-full min-h-0 w-full max-w-full flex-col gap-3 overflow-hidden">
       <div
         ref={stageRef}
         onDragOver={(e) => {
@@ -155,26 +155,26 @@ export function Preview({
             <span>Todos (ZIP)</span>
           </Button>
         )}
-        <div className="flex gap-2">
-          <Segmented
-            value={exportOptions.format}
-            onChange={(format) => onExportOptions({ ...exportOptions, format })}
-            options={[
-              { value: 'png', label: 'PNG' },
-              { value: 'jpg', label: 'JPG' },
-            ]}
-            className="w-24"
-          />
-          <Segmented
-            value={String(exportOptions.scale) as '1' | '2'}
-            onChange={(v) => onExportOptions({ ...exportOptions, scale: v === '2' ? 2 : 1 })}
-            options={[
-              { value: '1', label: '1×', title: '1080 px de largura' },
-              { value: '2', label: '2×', title: '2160 px de largura' },
-            ]}
-            className="w-20"
-          />
-        </div>
+      </div>
+      <div className="flex justify-center gap-2 w-full">
+        <Segmented
+          value={exportOptions.format}
+          onChange={(format) => onExportOptions({ ...exportOptions, format })}
+          options={[
+            { value: 'png', label: 'PNG' },
+            { value: 'jpg', label: 'JPG' },
+          ]}
+          className="w-24"
+        />
+        <Segmented
+          value={String(exportOptions.scale) as '1' | '2'}
+          onChange={(v) => onExportOptions({ ...exportOptions, scale: v === '2' ? 2 : 1 })}
+          options={[
+            { value: '1', label: '1×', title: '1080 px de largura' },
+            { value: '2', label: '2×', title: '2160 px de largura' },
+          ]}
+          className="w-20"
+        />
       </div>
     </div>
   );

@@ -28,6 +28,12 @@ body {
   scrollbar-color: #3f3f46 transparent;
   /* Garante que box-sizing seja consistente em todos os elementos */
   box-sizing: border-box;
+  /* Evita overflow em filhos de flex/grid */
+  min-width: 0;
+}
+
+img, video, svg {
+  max-width: 100%;
 }
 
 /* Melhora a fonte durante o carregamento (evita FOIT/CLS) */
