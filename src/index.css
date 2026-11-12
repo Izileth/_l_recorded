@@ -17,6 +17,11 @@ body {
   -webkit-font-smoothing: antialiased;
   /* Evita scroll horizontal causado por elementos que transbordam */
   overflow-x: hidden;
+  /* Suporte a bordas curvas e safe-areas de aparelhos Edge */
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  /* Quebra de palavras longas prevenindo overflow horizontal */
+  overflow-wrap: anywhere;
 }
 
 ::selection {
