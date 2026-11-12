@@ -12,6 +12,7 @@ import { LyricsPanel } from './components/LyricsPanel';
 import { Preview } from './components/Preview';
 import { SnippetEditor } from './components/SnippetEditor';
 import { Logo } from './components/Logo';
+import { ChevronDownIcon, FileTextIcon, ImageIcon, UploadCloudIcon, UploadIcon } from './components/Icons';
 
 const STORAGE_KEY = 'lyricards:v2';
 

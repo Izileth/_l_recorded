@@ -3,6 +3,7 @@ import type { Design, EmphasisStyle, TemplateId } from '../lib/types';
 import { ACCENT_FONTS, MAIN_FONTS, mainFont } from '../lib/fonts';
 import { COMBOS, RATIOS, TEMPLATES, backgroundOf } from '../lib/templates';
 import { Button, ColorField, Section, Segmented, Slider, Toggle } from './ui';
+import { SurpriseIcon } from './Icons';
 
 interface Props {
   design: Design;
@@ -120,8 +121,14 @@ export function DesignPanel({ design, onChange, onTemplate, onImage, onRandom }:
           <Section
             title="Combinações"
             aside={
-              <button onClick={onRandom} className="text-xs text-red-400 hover:text-red-300">
-                🎲 Surpreender
+              <button
+                type="button"
+                onClick={onRandom}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-red-400 hover:text-red-300 transition"
+                title="Gerar uma combinação visual aleatória"
+              >
+                <SurpriseIcon className="h-3.5 w-3.5" />
+                <span>Surpreender</span>
               </button>
             }
           >
