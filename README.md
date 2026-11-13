@@ -1,7 +1,12 @@
-# Lyricards
+# ON | Player
 
 MVP para transformar trechos de música em imagens para redes sociais.
 Stack: React + Vite + TypeScript + Tailwind CSS v4.
+
+## Sobre
+
+Sua principal função é a personalização de letras além do que plataformas como o Spotfy oferecem para postagens em diversas redes sociais.
+
 
 ## Rodar
 
