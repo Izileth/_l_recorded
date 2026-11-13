@@ -1,16 +1,110 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- SEO Primário -->
+    <title>Lyricards — Crie Cards Elegantes com Letras de Músicas & Frases</title>
+    <meta
+      name="title"
+      content="Lyricards — Crie Cards Elegantes com Letras de Músicas & Frases"
+    />
+    <meta
+      name="description"
+      content="Transforme letras de músicas, citações e frases em cards visuais incríveis para Instagram Stories, Reels, TikTok e WhatsApp. Importe arquivos .LRC, personalize tipografia, cores e fundos e exporte em alta resolução."
+    />
+    <meta
+      name="keywords"
+      content="lyricards, lyric cards, letras de musica, frases para stories, gerador de cards, lrc para cards, carrossel instagram, frases tiktok, templates letras de musica, design de tipografia, cards musicais"
+    />
+    <meta name="author" content="Lyricards" />
+    <meta name="creator" content="Lyricards" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="rating" content="general" />
+
+    <!-- Open Graph / Facebook / WhatsApp / LinkedIn -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Lyricards" />
+    <meta
+      property="og:title"
+      content="Lyricards — Crie Cards Elegantes com Letras de Músicas & Frases"
+    />
+    <meta
+      property="og:description"
+      content="Transforme letras de músicas e citações em cards visuais incríveis para Instagram Stories, Reels e TikTok em segundos."
+    />
+    <meta property="og:image" content="/favicon.svg" />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:alt" content="Lyricards - Criador de Cards e Frases com Letras de Músicas" />
+
+    <!-- Twitter / X Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Lyricards — Crie Cards Elegantes com Letras de Músicas & Frases"
+    />
+    <meta
+      name="twitter:description"
+      content="Transforme letras de músicas e citações em cards visuais incríveis para Instagram Stories, Reels e TikTok em segundos."
+    />
+    <meta name="twitter:image" content="/favicon.svg" />
+    <meta name="twitter:image:alt" content="Lyricards - Criador de Cards e Frases com Letras de Músicas" />
+
+    <!-- PWA & Mobile Web Experience -->
     <meta name="theme-color" content="#09090b" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#09090b" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Lyricards" />
+    <meta name="application-name" content="Lyricards" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Favicon & Touch Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>ON | Player</title>
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="mask-icon" href="/favicon.svg" color="#ef4444" />
+
+    <!-- Preconnect Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Dados Estruturados / Schema.org (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Lyricards",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "description": "Aplicativo web para criação de cards elegantes com letras de músicas, frases e citações para redes sociais.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "BRL"
+        },
+        "featureList": [
+          "Importação de arquivos de letras sincronizadas .LRC e .TXT",
+          "Templates modernos com tipografia profissional",
+          "Exportação em alta definição PNG e pacote ZIP",
+          "Formatos otimizados para Stories (9:16), Feed (1:1), Retrato (4:5) e Paisagem (16:9)"
+        ]
+      }
+    </script>
   </head>
   <body>
+    <noscript>
+      <div style="padding: 2rem; text-align: center; font-family: system-ui, -apple-system, sans-serif; background-color: #09090b; color: #f4f4f5; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <h1 style="font-size: 1.75rem; margin-bottom: 0.75rem; color: #fff;">Lyricards — Criador de Cards de Letras de Música</h1>
+        <p style="max-width: 540px; line-height: 1.6; color: #a1a1aa;">O Lyricards permite criar cards e carrosséis com letras de músicas, citações e frases para Instagram Stories, Reels, TikTok e WhatsApp. Ative o JavaScript no seu navegador para utilizar a ferramenta.</p>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
