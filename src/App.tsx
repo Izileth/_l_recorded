@@ -1,11 +1,18 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import type { Design, LyricLine, Slide, TemplateId } from './lib/types';
-import { DEFAULT_DESIGN, RATIOS, applyTemplate, randomCombo } from './lib/templates';
-import { SAMPLE_LRC, buildSnippet, parseLyrics, readTextFile } from './lib/lrc';
-import { slugify, splitSlides, wrapGroups } from './lib/text';
-import { cardToBlob, copyImage, downloadBlob, nextFrame, zipBlobs, type ExportOptions } from './lib/export';
-import { ensureFonts } from './lib/fonts';
-import { fileToDataUrl } from './lib/image';
+import type { ExportOptions } from './constants/export';
+import { RATIOS } from './constants/ratios';
+import { applyTemplate, randomCombo } from './scripts/templates';
+import { SAMPLE_LRC, buildSnippet, parseLyrics, readTextFile } from './scripts/lrc';
+import { slugify, splitSlides, wrapGroups } from './scripts/text';
+import { cardToBlob, copyImage, downloadBlob, nextFrame, zipBlobs } from './scripts/export';
+import { ensureFonts } from './scripts/fonts';
+import { fileToDataUrl } from './scripts/image';
+import { useInitialState, usePersistence } from './hooks/usePersistence';
+import { useToast } from './hooks/useToast';
+import { useFonts } from './hooks/useFonts';
+import { useGlobalDragDrop } from './hooks/useGlobalDragDrop';
+import { useClickOutside } from './hooks/useClickOutside';
 import { Card } from './components/Card';
 import { DesignPanel } from './components/DesignPanel';
 import { LyricsPanel } from './components/LyricsPanel';
@@ -14,44 +21,8 @@ import { SnippetEditor } from './components/SnippetEditor';
 import { Logo } from './components/Logo';
 import { ChevronDownIcon, FileTextIcon, ImageIcon, UploadCloudIcon, UploadIcon } from './components/Icons';
 
-const STORAGE_KEY = 'lyricards:v2';
-
-interface Persisted {
-  text: string;
-  design: Design;
-  lyrics: LyricLine[];
-  fileName: string;
-  exportOptions: ExportOptions;
-}
-
-const DEFAULT_EXPORT: ExportOptions = { format: 'png', scale: 1 };
-
-function load(): Persisted {
-  const fallback: Persisted = {
-    text: 'Another\nLevel',
-    design: DEFAULT_DESIGN,
-    lyrics: [],
-    fileName: '',
-    exportOptions: DEFAULT_EXPORT,
-  };
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return fallback;
-    const data = JSON.parse(raw) as Partial<Persisted>;
-    return {
-      text: typeof data.text === 'string' ? data.text : fallback.text,
-      design: { ...DEFAULT_DESIGN, ...(data.design ?? {}), bgImage: null },
-      lyrics: Array.isArray(data.lyrics) ? data.lyrics : [],
-      fileName: data.fileName ?? '',
-      exportOptions: { ...DEFAULT_EXPORT, ...(data.exportOptions ?? {}) },
-    };
-  } catch {
-    return fallback;
-  }
-}
-
 export default function App() {
-  const initial = useMemo(load, []);
+  const initial = useInitialState();
   const [text, setText] = useState(initial.text);
   const [design, setDesign] = useState<Design>(initial.design);
   const [lyrics, setLyrics] = useState<LyricLine[]>(initial.lyrics);
@@ -60,61 +31,19 @@ export default function App() {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [focusMap, setFocusMap] = useState<Record<number, number>>({});
   const [index, setIndex] = useState(0);
-  const [fontsTick, setFontsTick] = useState(0);
   const [exporting, setExporting] = useState(false);
-  const [toast, setToast] = useState('');
-  const [globalDragging, setGlobalDragging] = useState(false);
   const [uploadMenuOpen, setUploadMenuOpen] = useState(false);
 
   const stageRef = useRef<HTMLDivElement>(null);
-  const toastTimer = useRef<number | undefined>(undefined);
-  const dragCounter = useRef(0);
   const headerLyricsInputRef = useRef<HTMLInputElement>(null);
   const headerImageInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Fecha o menu de upload ao clicar fora
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setUploadMenuOpen(false);
-      }
-    }
-    if (uploadMenuOpen) {
-      window.addEventListener('pointerdown', handleClickOutside);
-    }
-    return () => window.removeEventListener('pointerdown', handleClickOutside);
-  }, [uploadMenuOpen]);
-
-  // Carrega as fontes escolhidas e força o recálculo do ajuste automático.
-  useEffect(() => {
-    let alive = true;
-    void ensureFonts(design.fontMain, design.fontAccent).then(() => {
-      if (alive) setFontsTick((t) => t + 1);
-    });
-    return () => {
-      alive = false;
-    };
-  }, [design.fontMain, design.fontAccent]);
-
-  // Persistência local (a imagem de fundo fica de fora: é pesada demais para o localStorage).
-  useEffect(() => {
-    const id = window.setTimeout(() => {
-      try {
-        const data: Persisted = { text, design: { ...design, bgImage: null }, lyrics, fileName, exportOptions };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      } catch {
-        /* armazenamento cheio ou bloqueado: ignora */
-      }
-    }, 300);
-    return () => window.clearTimeout(id);
-  }, [text, design, lyrics, fileName, exportOptions]);
-
-  const showToast = useCallback((msg: string) => {
-    setToast(msg);
-    window.clearTimeout(toastTimer.current);
-    toastTimer.current = window.setTimeout(() => setToast(''), 2600);
-  }, []);
+  // ── Hooks extraídos ──
+  const { toast, showToast } = useToast();
+  const fontsTick = useFonts(design.fontMain, design.fontAccent);
+  usePersistence({ text, design, lyrics, fileName, exportOptions });
+  useClickOutside(menuRef, uploadMenuOpen, () => setUploadMenuOpen(false));
 
   const slides = useMemo<Slide[]>(
     () => splitSlides(text).map((block) => wrapGroups(block, design.maxChars)).filter((s) => s.length),
@@ -198,54 +127,10 @@ export default function App() {
     [handleImage, handleImport, showToast],
   );
 
-  // Arraste e solte global para arquivos (.txt, .lrc, imagens)
-  useEffect(() => {
-    function onDragEnter(e: globalThis.DragEvent) {
-      if (e.dataTransfer?.types.includes('Files')) {
-        e.preventDefault();
-        dragCounter.current++;
-        setGlobalDragging(true);
-      }
-    }
-    function onDragLeave(e: globalThis.DragEvent) {
-      if (e.dataTransfer?.types.includes('Files')) {
-        e.preventDefault();
-        dragCounter.current--;
-        if (dragCounter.current <= 0) {
-          dragCounter.current = 0;
-          setGlobalDragging(false);
-        }
-      }
-    }
-    function onDragOver(e: globalThis.DragEvent) {
-      if (e.dataTransfer?.types.includes('Files')) {
-        e.preventDefault();
-      }
-    }
-    function onDrop(e: globalThis.DragEvent) {
-      if (e.dataTransfer?.types.includes('Files')) {
-        e.preventDefault();
-        dragCounter.current = 0;
-        setGlobalDragging(false);
-        const file = e.dataTransfer.files[0];
-        if (file) {
-          void handleFile(file, { loadIntoSnippet: true });
-        }
-      }
-    }
-
-    window.addEventListener('dragenter', onDragEnter);
-    window.addEventListener('dragleave', onDragLeave);
-    window.addEventListener('dragover', onDragOver);
-    window.addEventListener('drop', onDrop);
-
-    return () => {
-      window.removeEventListener('dragenter', onDragEnter);
-      window.removeEventListener('dragleave', onDragLeave);
-      window.removeEventListener('dragover', onDragOver);
-      window.removeEventListener('drop', onDrop);
-    };
-  }, [handleFile]);
+  // Arraste e solte global
+  const globalDragging = useGlobalDragDrop(
+    useCallback((file: File) => void handleFile(file, { loadIntoSnippet: true }), [handleFile]),
+  );
 
   function clearLyrics() {
     setLyrics([]);
