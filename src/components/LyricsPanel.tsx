@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState, type DragEvent, type MouseEvent } from 'react';
 import type { LyricLine } from '../lib/types';
-import { formatTime, readTextFile } from '../lib/lrc';
+import { formatTime, readTextFile } from '../scripts/lrc';
 import { Button, Section } from './ui';
 import { UploadCloudIcon } from './Icons';
 

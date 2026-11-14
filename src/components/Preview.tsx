@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type DragEvent } from 'react';
 import type { Design, Slide } from '../lib/types';
-import type { ExportOptions } from '../lib/export';
-import { RATIOS } from '../lib/templates';
+import type { ExportOptions } from '../constants/export';
+import { RATIOS } from '../constants/ratios';
 import { Card } from './Card';
 import { Button, Segmented } from './ui';
 import { CopyIcon, DownloadIcon } from './Icons';

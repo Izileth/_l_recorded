@@ -1,7 +1,9 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import type { Design, Slide } from '../lib/types';
-import { FONT_SANS, FONT_SERIF, accentFont, mainFont } from '../lib/fonts';
-import { RATIOS, backgroundOf } from '../lib/templates';
+import { FONT_SANS, FONT_SERIF } from '../constants/fonts';
+import { RATIOS } from '../constants/ratios';
+import { accentFont, mainFont } from '../scripts/fonts';
+import { backgroundOf } from '../scripts/templates';
 
 interface CardProps {
   slide: Slide;

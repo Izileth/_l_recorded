@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import type { Design, LyricLine } from '../lib/types';
 import type { ExportOptions } from '../constants/export';
 import { DEFAULT_EXPORT } from '../constants/export';

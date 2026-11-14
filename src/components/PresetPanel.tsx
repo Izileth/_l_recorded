@@ -6,7 +6,7 @@ import {
   formatPresetDate,
   loadPresets,
   savePresets,
-} from '../lib/presets';
+} from '../scripts/presets';
 import { Button, Section } from './ui';
 import { BookmarkIcon, CheckIcon, TrashIcon } from './Icons';
 

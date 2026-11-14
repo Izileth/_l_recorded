@@ -1,7 +1,10 @@
 import { useRef, useState, type DragEvent } from 'react';
 import type { Design, EmphasisStyle, TemplateId } from '../lib/types';
-import { ACCENT_FONTS, MAIN_FONTS, mainFont } from '../lib/fonts';
-import { COMBOS, RATIOS, TEMPLATES, backgroundOf } from '../lib/templates';
+import { ACCENT_FONTS, MAIN_FONTS } from '../constants/fonts';
+import { COMBOS, TEMPLATES } from '../constants/templates';
+import { RATIOS } from '../constants/ratios';
+import { mainFont } from '../scripts/fonts';
+import { backgroundOf } from '../scripts/templates';
 import { Button, ColorField, Section, Segmented, Slider, Toggle } from './ui';
 import { SurpriseIcon } from './Icons';
 import { PresetPanel } from './PresetPanel';

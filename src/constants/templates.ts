@@ -1,5 +1,4 @@
-import type { Design, FontAccentId, FontMainId, TemplateId } from '../lib/types';
-import { ACCENT_FONTS, MAIN_FONTS } from './fonts';
+import type { Design, TemplateId } from '../lib/types';
 
 /** Parte do design controlada pelo template (o resto — formato, imagem, crédito — é do usuário). */
 export type TemplateStyle = Omit<
